@@ -36,4 +36,14 @@ class TestConfig(Config):
 
     @staticmethod
     def get_database_url() -> str:
-        return "sqlite:///:memory:"
+        url = os.environ.get("TEST_DB_URL", "").strip()
+        if url:
+            return url
+
+        url = os.environ.get("DB_URL", "").strip()
+        if url:
+            return url
+
+        raise DatabaseConfigurationError(
+            "Tests require TEST_DB_URL or DB_URL pointing to a PostgreSQL database."
+        )

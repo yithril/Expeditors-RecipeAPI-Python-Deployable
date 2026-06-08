@@ -10,6 +10,7 @@ def main() -> int:
     print(f"Connecting to database: {database_url}")
 
     try:
+        database.ensure_database_exists(database_url)
         init_engine(database_url)
         create_tables()
         db = SessionLocal()

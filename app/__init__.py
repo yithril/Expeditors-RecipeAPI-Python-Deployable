@@ -17,6 +17,8 @@ def create_app(config_class=Config):
 
     database_url = config_class.get_database_url()
     database.dispose_engine()
+    if not app.config.get("TESTING"):
+        database.ensure_database_exists(database_url)
     database.init_engine(database_url)
     database.create_tables()
 

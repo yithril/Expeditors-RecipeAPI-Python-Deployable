@@ -1,17 +1,32 @@
--- Recipe API — create the recipe table
+-- =============================================================================
+-- Recipe API — full database setup
+-- File: scripts/schema.sql
+-- =============================================================================
 --
--- Location in this project: scripts/schema.sql
+-- Creates the PostgreSQL database "recipes" (if needed) and the "recipe" table.
 --
--- Run this script against your Azure PostgreSQL database (e.g. "recipes")
--- after Exercise 2.1 and before deploying the Flask app.
+-- AZURE DATA STUDIO (recommended for students)
+--   Step 1: Connect to the "postgres" database on your server.
+--           Highlight and run SECTION 1 only.
+--   Step 2: Connect to the "recipes" database (refresh if it was just created).
+--           Highlight and run SECTION 2 only.
 --
--- Options:
---   • Azure Data Studio — connect to your server, open this file, run it
---   • psql — psql "host=... user=... dbname=recipes sslmode=require" -f scripts/schema.sql
+-- psql (one command from the project root — runs both sections automatically)
+--   psql "host=YOUR_HOST.postgres.database.azure.com port=5432 dbname=postgres user=YOUR_USER@YOUR_SERVER sslmode=require" -f scripts/schema.sql
 --
--- This script only creates the table. To load the 18 sample recipes afterward, either:
---   • deploy and start the app (it seeds when the table is empty), or
---   • run: python -m scripts.init_db   (requires DB_URL in your environment)
+-- After this script, deploy the app or run "python -m scripts.init_db" to load
+-- 18 sample recipes (the app also seeds on startup when the table is empty).
+-- =============================================================================
+
+-- SECTION 1 — run while connected to database "postgres"
+-- If you see "already exists", the database is fine — continue to Section 2.
+
+CREATE DATABASE recipes;
+
+-- SECTION 2 — run while connected to database "recipes"
+-- psql only: the line below switches to the recipes database automatically.
+
+\connect recipes
 
 CREATE TABLE IF NOT EXISTS recipe (
   id BIGSERIAL PRIMARY KEY,

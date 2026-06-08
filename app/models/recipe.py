@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, Integer, String, Text, func
+from sqlalchemy import BigInteger, DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
@@ -10,7 +10,7 @@ class Recipe(Base):
     __tablename__ = "recipe"
 
     id: Mapped[int] = mapped_column(
-        BigInteger().with_variant(Integer, "sqlite"),  # sqlite variant for pytest only
+        BigInteger,
         primary_key=True,
         autoincrement=True,
     )

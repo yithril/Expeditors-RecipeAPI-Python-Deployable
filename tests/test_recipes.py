@@ -1,12 +1,16 @@
 import pytest
 
 from app import create_app, destroy_app_context
+from app import database
 from app.config import TestConfig
 
 
 @pytest.fixture
 def app():
     application = create_app(TestConfig)
+    if database.engine is not None:
+        database.Base.metadata.drop_all(bind=database.engine)
+        database.create_tables()
     yield application
     destroy_app_context()
 

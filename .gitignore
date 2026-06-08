@@ -30,10 +30,8 @@ ENV/
 .env.*
 !.env.example
 
-# Local databases (legacy SQLite files, if any)
+# Local database files (should not be committed)
 *.db
-*.sqlite
-*.sqlite3
 
 # Testing / coverage
 .pytest_cache/

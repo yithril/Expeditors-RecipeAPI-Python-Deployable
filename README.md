@@ -18,7 +18,7 @@ Educational REST API for teaching **Azure App Service deployment** and REST fund
 
 ## Quick start (local)
 
-1. Create a PostgreSQL database named `recipes` (or use your Azure server's database).
+1. Create a PostgreSQL server in Azure (Exercise 2.1). The app expects a database named **`recipes`** — run **`scripts/schema.sql`** to create it, or let the app create it automatically on startup.
 
 2. Copy environment variables:
 
@@ -77,15 +77,13 @@ JSON fields use camelCase in responses (for example `createdAt`, `updatedAt`).
 
 Either `DB_URL` **or** `DB_HOST` + credentials must be set. The app will not start without a database configuration.
 
-## Create the database table (lab step)
+## Create the database and table (lab step)
 
-The SQL script to create the `recipe` table is included in this project:
+**`scripts/schema.sql`** creates the **`recipes`** database and the **`recipe`** table. See **`scripts/README.md`** for Azure Data Studio and `psql` steps.
 
-**`scripts/schema.sql`**
+You can skip the manual SQL step if you prefer: on startup the app **creates the `recipes` database** (when missing) and the **`recipe`** table, then seeds 18 recipes when the table is empty.
 
-Run it against your Azure PostgreSQL `recipes` database (Azure Data Studio or `psql`) before deploying the app. See **`scripts/README.md`** for step-by-step instructions.
-
-After the table exists, either deploy the app (it seeds 18 recipes when the table is empty) or run:
+Optional — same result from your machine:
 
 ```bash
 set DB_URL=postgresql://user:pass@host:5432/recipes?sslmode=require
@@ -98,21 +96,22 @@ Unlike Spring Boot with Flyway/Liquibase, Flask does **not** auto-run versioned 
 
 ```bash
 pip install -r requirements-dev.txt
+set TEST_DB_URL=postgresql://user:pass@host:5432/recipes_test?sslmode=require
 pytest
 ```
 
-Tests use in-memory SQLite so CI and local test runs do not need a real PostgreSQL instance.
+Tests use the same PostgreSQL connection as the app (`DB_URL` or `TEST_DB_URL`). Use a separate test database if you do not want test data in your dev database.
 
 ## Production (Azure App Service)
 
-1. Create **Azure Database for PostgreSQL Flexible Server** and a database (e.g. `recipes`).
+1. Create **Azure Database for PostgreSQL Flexible Server** (Exercise 2.1).
 2. Create a **Linux Web App** with **Python 3.11**.
 3. Set startup command to `startup.sh` (or `gunicorn --bind=0.0.0.0:$PORT --workers=2 wsgi:app`).
 4. In **Configuration → Application settings**, set:
-   - `DB_URL` — full connection string with `?sslmode=require`
+   - `DB_URL` — full connection string with `?sslmode=require` (database name `recipes` at end of URL)
    - Or `DB_HOST`, `DB_USERNAME`, `DB_PASSWORD`, `DB_NAME`
-5. Run **`scripts/schema.sql`** against the `recipes` database (see `scripts/README.md`).
-6. Deploy the app. On first start it seeds 18 recipes if the table is empty.
+5. Optional: run **`scripts/schema.sql`** (see `scripts/README.md`). Otherwise the app creates the database and table on first start.
+6. Deploy the app. On first start it creates the `recipes` database if needed, creates the table, and seeds 18 recipes.
 7. Verify: `GET https://<app-name>.azurewebsites.net/api/recipes` returns 18 recipes.
 
 Allow the App Service outbound IP (or enable "Allow Azure services") in the PostgreSQL firewall so the web app can connect.
